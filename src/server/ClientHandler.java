@@ -1,9 +1,6 @@
 package server;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 
 public class ClientHandler implements Runnable {
@@ -44,6 +41,13 @@ public class ClientHandler implements Runnable {
                     disconnect();
                 }
                 server.messageReceived(id, line);
+                if (isNumeric(line)) {
+                    String fileName = "client" + this.id + ".csv";
+                    String filepath = "clientcsvfiles" + File.separator + fileName;
+                    createCSVFile(filepath, line);
+                } else {
+                    System.out.println("Received a non-numeric string: " + line);
+                }
                 System.out.println("Client " + id + ": " + line);
 
             } catch (IOException e) {;
@@ -68,6 +72,29 @@ public class ClientHandler implements Runnable {
             System.out.print("Client " + id + " disconnected successfully.");
         } catch (IOException e) {
             System.out.println("Error occurred while disconnecting: " + e.getMessage());
+        }
+    }
+
+
+    private static boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private static void createCSVFile(String filepath, String numericData) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filepath, true));
+            writer.write(numericData);
+            writer.newLine();
+            writer.flush();
+            writer.close();
+            System.out.println("CSV file created: " + filepath);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
