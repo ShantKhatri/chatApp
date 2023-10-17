@@ -17,7 +17,7 @@ public class ServerChatWindow extends JFrame implements ChatServerObserver {
 
         transcript = new JTextArea(30, 50);
         transcript.setEditable(false);
-        transcript.setBackground(Color.BLUE);
+        transcript.setBackground(Color.GRAY);
         transcript.setForeground(SystemColor.MAGENTA);
 
         centerPanel = new JPanel();

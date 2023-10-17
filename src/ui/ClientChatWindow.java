@@ -22,7 +22,7 @@ public class ClientChatWindow extends JFrame implements ChatClientObserver {
 
         transcript = new JTextArea(30, 50);
         transcript.setEditable(false);
-        transcript.setBackground(Color.BLUE);
+        transcript.setBackground(Color.GRAY);
         transcript.setForeground(SystemColor.MAGENTA);
 
         JPanel inputPanel = new JPanel();
