@@ -8,12 +8,19 @@ import java.util.Base64;
 
 public class AES_ENCRYPTION {
     private static SecretKey key;
-    private final int KEY_SIZE = 128;
+    private static final int KEY_SIZE = 128;
     private static final int DATA_LENGTH = 128;
     private static Cipher encryptionCipher;
 
 
-    public void init() throws Exception {
+    static {
+        try {
+            init();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void init() throws Exception {
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
         keyGenerator.init(KEY_SIZE);
         key = keyGenerator.generateKey();

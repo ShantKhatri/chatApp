@@ -23,7 +23,9 @@ public class ServerChatWindow extends JFrame implements ChatServerObserver {
         centerPanel = new JPanel();
         centerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         for(ClientHandler clientHandler : server.clientHandlers()) {
-            initInputPanel(clientHandler);
+            if (clientHandler.isRunning()) {
+                initInputPanel(clientHandler);
+            }
         }
 
         JLabel transcriptLabel = new JLabel("Chat Transcript");
