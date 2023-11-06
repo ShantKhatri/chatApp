@@ -1,16 +1,16 @@
 package client;
 
-import ui.ClientChatWindow;
 import util.ChatClientObserver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
+
+import encryptionalgorithm.AES_ENCRYPTION;
 
 public class ChatClient implements Runnable {
     private final int port;
@@ -51,11 +51,23 @@ public class ChatClient implements Runnable {
         while(connected) {
             try {
                 String line = in.readLine();
+
+                String decrypted = null;
+                try {
+                    if (line!=null)
+                        decrypted = AES_ENCRYPTION.decrypt(line);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                line=decrypted;
+
                 if(line == null || line.trim().equals("STOP")) {
                     disconnect();
                     return;
                 }
-                observers.forEach(o->o.receivedMessage(line));
+
+                String finalLine = line;
+                observers.forEach(o->o.receivedMessage(finalLine));
                 System.out.println("Server: " + line);
             } catch (IOException e) {
                 System.out.println("Error occurred: " + e.getMessage());
@@ -65,9 +77,15 @@ public class ChatClient implements Runnable {
         }
         disconnect();
     }
-
-    public synchronized void sendMessage(String message) {
-        out.println(message);
+    public synchronized void sendMessage(String message)  {
+        String finalMessage = null;
+        try {
+             finalMessage = AES_ENCRYPTION.encrypt(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        out.println(finalMessage);
         out.flush();
         observers.forEach(o->o.sentMessage(message));
     }

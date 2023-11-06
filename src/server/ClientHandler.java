@@ -1,5 +1,7 @@
 package server;
 
+import encryptionalgorithm.AES_ENCRYPTION;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -37,10 +39,22 @@ public class ClientHandler implements Runnable {
         while(running) {
             try {
                 String line = in.readLine();
+                String decrypted = null;
+                try {
+                    if (line!=null)
+                        decrypted = AES_ENCRYPTION.decrypt(line);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                line=decrypted;
                 if(line == null || line.trim().equals("STOP")) {
                     disconnect();
                 }
-                server.messageReceived(id, line);
+
+
+                server.messageReceived(id, decrypted);
+
+                System.out.println(line);
                 if (isNumeric(line)) {
                     String fileName = "client" + this.id + ".csv";
                     String filepath = "clientcsvfiles" + File.separator + fileName;
@@ -50,17 +64,26 @@ public class ClientHandler implements Runnable {
                 }
                 System.out.println("Client " + id + ": " + line);
 
-            } catch (IOException e) {;
+            } catch (IOException e) {
 //                System.out.println("Client " + id + " disconnected.");
                 running = false;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 
     public void sendMessage(String message) {
-        out.println(message);
+        String finalMessage = null;
+        try {
+            finalMessage = AES_ENCRYPTION.encrypt(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        out.println(finalMessage);
         out.flush();
         server.messageSent(id, message);
+
         System.out.println("Sent message to Client " + id + " : " + message);
     }
 
