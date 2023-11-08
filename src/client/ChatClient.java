@@ -51,11 +51,14 @@ public class ChatClient implements Runnable {
         while(connected) {
             try {
                 String line = in.readLine();
+                String regex = "\\s*\\bkill\\b\\s*";
+                line = line.replaceAll(regex, " ");
                 if(line == null || line.trim().equals("STOP")) {
                     disconnect();
                     return;
                 }
-                observers.forEach(o->o.receivedMessage(line));
+                String finalLine = line;
+                observers.forEach(o->o.receivedMessage(finalLine));
                 System.out.println("Server: " + line);
             } catch (IOException e) {
                 System.out.println("Error occurred: " + e.getMessage());
