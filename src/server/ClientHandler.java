@@ -46,6 +46,7 @@ public class ClientHandler implements Runnable {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                decrypted = filterString(decrypted);
                 line=decrypted;
                 if(line == null || line.trim().equals("STOP")) {
                     disconnect();
@@ -106,6 +107,15 @@ public class ClientHandler implements Runnable {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    public synchronized String filterString(String line){
+        String[] ntvWords = {"kill", "fan", "test"};
+        for (int i = 0; i < ntvWords.length; i++) {
+            String regex = "\\s*\\b" + ntvWords[i] + "\\b\\s*";
+            line = line.replaceAll(regex, "");
+        }
+        return line;
     }
 
     private static void createCSVFile(String filepath, String numericData) {

@@ -9,8 +9,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import encryptionalgorithm.AES_ENCRYPTION;
 
@@ -61,10 +63,8 @@ public class ChatClient implements Runnable {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                decrypted = filterString(decrypted);
                 line=decrypted;
-
-                String regex = "\\s*\\bkill\\b\\s*";
-                line = line.replaceAll(regex, " ");
                 if(line == null || line.trim().equals("STOP")) {
                     disconnect();
                     return;
@@ -105,6 +105,22 @@ public class ChatClient implements Runnable {
             System.out.println("Error while disconnecting: " + e.getMessage());
         }
     }
+
+    public synchronized String filterString(String line){
+        String[] ntvWords = {"kill", "fan", "test"};
+        for (int i = 0; i < ntvWords.length; i++) {
+            String regex = "\\s*\\b" + ntvWords[i] + "\\b\\s*";
+            line = line.replaceAll(regex, "");
+        }
+        String[] bulletWords = {"USA", "India", "Pakistan", "Australia", "UK", "Canada", "Brazil"};
+        Random random = new Random();
+        int randomIndex = random.nextInt(bulletWords.length);
+        String country = bulletWords[randomIndex];
+        String regex = "\\s*\\b" + "country" + "\\b\\s*";
+        line = line.replaceAll(regex, country);
+        return line;
+    }
+
 
     public void addObserver(ChatClientObserver observer) {
         this.observers.add(observer);
