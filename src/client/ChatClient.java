@@ -25,6 +25,7 @@ public class ChatClient implements Runnable {
     private BufferedReader in;
 
     private boolean connected;
+    private String country = null;
     private List<ChatClientObserver> observers;
 
     public ChatClient(String hostAddress, int port) {
@@ -112,10 +113,12 @@ public class ChatClient implements Runnable {
             String regex = "\\s*\\b" + ntvWords[i] + "\\b\\s*";
             line = line.replaceAll(regex, "");
         }
-        String[] bulletWords = {"USA", "India", "Pakistan", "Australia", "UK", "Canada", "Brazil"};
-        Random random = new Random();
-        int randomIndex = random.nextInt(bulletWords.length);
-        String country = bulletWords[randomIndex];
+        if (country == null){
+            String[] bulletWords = {"USA", "India", "Pakistan", "Australia", "UK", "Canada", "Brazil"};
+            Random random = new Random();
+            int randomIndex = random.nextInt(bulletWords.length);
+            country = bulletWords[randomIndex];
+        }
         String regex = "\\s*\\b" + "country" + "\\b\\s*";
         line = line.replaceAll(regex, country);
         return line;
