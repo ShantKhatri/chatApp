@@ -17,13 +17,15 @@ public class ServerChatWindow extends JFrame implements ChatServerObserver {
 
         transcript = new JTextArea(30, 50);
         transcript.setEditable(false);
-        transcript.setBackground(Color.BLUE);
-        transcript.setForeground(SystemColor.MAGENTA);
+        transcript.setBackground(Color.GRAY);
+        transcript.setForeground(SystemColor.BLACK);
 
         centerPanel = new JPanel();
         centerPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         for(ClientHandler clientHandler : server.clientHandlers()) {
-            initInputPanel(clientHandler);
+            if (clientHandler.isRunning()) {
+                initInputPanel(clientHandler);
+            }
         }
 
         JLabel transcriptLabel = new JLabel("Chat Transcript");

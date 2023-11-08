@@ -12,6 +12,8 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
 
+import encryptionalgorithm.AES_ENCRYPTION;
+
 public class ChatClient implements Runnable {
     private final int port;
     private final String hostAddress;
@@ -51,6 +53,16 @@ public class ChatClient implements Runnable {
         while(connected) {
             try {
                 String line = in.readLine();
+
+                String decrypted = null;
+                try {
+                    if (line!=null)
+                        decrypted = AES_ENCRYPTION.decrypt(line);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                line=decrypted;
+
                 String regex = "\\s*\\bkill\\b\\s*";
                 line = line.replaceAll(regex, " ");
                 if(line == null || line.trim().equals("STOP")) {
@@ -68,9 +80,15 @@ public class ChatClient implements Runnable {
         }
         disconnect();
     }
+    public synchronized void sendMessage(String message)  {
+        String finalMessage = null;
+        try {
+             finalMessage = AES_ENCRYPTION.encrypt(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-    public synchronized void sendMessage(String message) {
-        out.println(message);
+        out.println(finalMessage);
         out.flush();
         observers.forEach(o->o.sentMessage(message));
     }
